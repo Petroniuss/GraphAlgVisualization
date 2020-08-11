@@ -1,0 +1,14 @@
+@use '~src/styles' as vars;
+
+.navbar {
+  color: vars.$accent;
+  background-color: vars.$background-color;
+  display: flex;
+  justify-content: space-around;
+}
+
+.navbar.nav-item {
+}
+
+.title {
+}

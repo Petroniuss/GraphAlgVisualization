@@ -1,1 +1,28 @@
 /* You can add global styles to this file, and also import other style files */
+$pico-void: #192a56;
+$mazarine-blue: #273c75;
+$jalapeno-red: #b71540;
+$turbo: #f9ca24;
+$bright-green: #44bd32;
+
+// simple
+$sdark: #0b0c10;
+$sgray: #1f2833;
+$sred: #c3073f;
+$sblue: #66fcf1;
+$sgreen: #86c232;
+
+$accent: $sgreen;
+$primary: $sblue;
+$background-color: $sgray;
+$background-darker: $sdark;
+
+body {
+  margin: 0;
+  background-color: $sgray;
+  color: white;
+}
+
+h1 {
+  font-size: 2.2em;
+}
