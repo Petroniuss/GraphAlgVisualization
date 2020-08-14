@@ -16,6 +16,7 @@ $red: #e01e37;
 .node {
   circle {
     stroke: vars.$background-color;
+    stroke-width: 0.6;
   }
 }
 
@@ -23,11 +24,9 @@ $red: #e01e37;
   line {
     fill: none;
     stroke: #fe9922;
-    stroke-width: 2;
+    stroke-width: 0.72;
   }
 }
-
-//
 
 .arc {
   stroke: $red;

@@ -1,4 +1,4 @@
-import { SimulationNodeDatum, SimulationLinkDatum } from 'd3';
+import { SimulationNodeDatum, SimulationLinkDatum, map } from 'd3';
 
 // we might have classes that define more properties.
 export interface Node extends SimulationNodeDatum {
@@ -22,12 +22,12 @@ class GraphError extends Error {
 }
 
 export class Graph<N extends Node, E extends Edge> {
-  private readonly adjMap: Map<string, [E]>;
+  private readonly adjMap: Map<string, E[]>;
   private readonly nodesMap: Map<string, N>;
 
   //   For some reason I cannot access `this`?!?!
-  constructor(nodes: [N], edges: [E]) {
-    this.adjMap = new Map<string, [E]>();
+  constructor(nodes: N[], edges: E[]) {
+    this.adjMap = new Map<string, E[]>();
     this.nodesMap = new Map<string, N>();
 
     nodes.forEach((n) => this.addNode(n));
@@ -42,6 +42,7 @@ export class Graph<N extends Node, E extends Edge> {
     }
 
     this.nodesMap.set(key, node);
+    this.adjMap.set(key, new Array<E>());
   }
 
   public addEdge(edge: E): void {
@@ -56,7 +57,7 @@ export class Graph<N extends Node, E extends Edge> {
     let adjList = this.adjMap.get(u);
 
     // Sanity check
-    if (!adjList.every((e) => edge.target === e.target)) {
+    if (!adjList.every((e) => edge.target !== e.target)) {
       throw new GraphError(`Duplicate edge: ${edge.source}-${edge.target}! `);
     }
 
@@ -69,5 +70,12 @@ export class Graph<N extends Node, E extends Edge> {
     }
 
     return this.nodesMap.get(id);
+  }
+
+  public getEdgeNodes(edge: E): [N, N] {
+    let u = edge.from,
+      v = edge.to;
+
+    return [this.nodesMap.get(u), this.nodesMap.get(v)];
   }
 }

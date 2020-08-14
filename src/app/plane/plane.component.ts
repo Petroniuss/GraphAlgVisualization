@@ -20,10 +20,14 @@ export class PlaneComponent implements OnInit {
   static readonly nodeRadiusOnFocus = 5;
   static readonly collisionRadius = PlaneComponent.nodeRadius;
 
+  private readonly inputParser: NetworkInputParserService;
+
   private svg: d3.Selection<SVGElement, any, HTMLElement, any>;
   private graph: Graph<Node, Edge>;
 
-  constructor(inputParser: NetworkInputParserService) {}
+  constructor(inputParser: NetworkInputParserService) {
+    this.inputParser = inputParser;
+  }
 
   ngOnInit(): void {
     this.svg = d3
@@ -31,15 +35,9 @@ export class PlaneComponent implements OnInit {
       .attr('preserveAspectRatio', 'xMinYMin meet')
       .attr('viewBox', `0 0 ${PlaneComponent.width} ${PlaneComponent.height}`);
 
-    d3.json<D3Network>('assets/test_network_data.json').then((data) => {
-      // data.links.forEach(link => {
-      //   link.from = link.target;
-      // })
-      // Idk why this doesn't work..
-      // this.graph = new Graph<Node, Edge>(data.nodes, data.links);
-      // let foo = new Foo(data.nodes);
-
-      this.createLayout(data);
+    this.inputParser.fetchData().then((network) => {
+      this.graph = new Graph(network.nodes, network.links);
+      this.createLayout(network);
     });
   }
 
@@ -48,7 +46,15 @@ export class PlaneComponent implements OnInit {
       .scaleOrdinal<string, string>()
       .range(['#93c464', '#c3073f', '#5e88a2', '#ffb142']);
 
-    // let graph = this.graph;
+    let edges = this.svg
+      .append('g')
+      .attr('id', 'gEdges')
+      .selectAll('g')
+      .data(data.links)
+      .join('g')
+      .attr('class', 'edge');
+
+    let lines = edges.append('line').join('line');
 
     let nodes = this.svg
       .append('g')
@@ -72,17 +78,8 @@ export class PlaneComponent implements OnInit {
       .attr('r', PlaneComponent.nodeRadius)
       .attr('fill', (datum) => color(datum.id));
 
-    let edges = this.svg
-      .append('g')
-      .attr('id', 'gEdges')
-      .selectAll('g')
-      .data(data.links)
-      .join('g')
-      .attr('class', 'edge');
-
-    let lines = edges.append('line').join('line');
-
     // let's see how long it takes my to configure the simulation..
+    let graph = this.graph;
     let simulation = d3
       .forceSimulation<Node, Edge>(data.nodes)
       .force(
@@ -99,7 +96,12 @@ export class PlaneComponent implements OnInit {
       .force('collision', d3.forceCollide<Node>(PlaneComponent.collisionRadius))
       .on('tick', function () {
         circles.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
-        // lines.attr('x1', (edge) => graph.getNode(edge.from).x);
+
+        lines
+          .attr('x1', (edge) => graph.getNode(edge.from).x)
+          .attr('x2', (edge) => graph.getNode(edge.to).x)
+          .attr('y1', (edge) => graph.getNode(edge.from).y)
+          .attr('y2', (edge) => graph.getNode(edge.to).y);
       });
 
     simulation.alpha(1).restart();

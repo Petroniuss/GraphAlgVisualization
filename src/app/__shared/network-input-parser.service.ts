@@ -13,43 +13,43 @@ export class NetworkInputParserService {
   fetchData(
     path: string = NetworkInputParserService.SIMPLE_NETWORK
   ): Promise<D3Network> {
-    return d3.json<InputData>(path).then((input) => input.toD3Network());
+    return d3.json<InputData>(path).then((input) => this.toD3Network(input));
   }
-}
 
-class InputNode {
-  id: string | number;
-
-  toNode(): Node {
-    return { id: this.id.toString() };
-  }
-}
-
-class InputLink {
-  source: string | number;
-  target: string | number;
-
-  toEdge(): Edge {
-    return {
-      source: this.source,
-      target: this.target,
-      from: this.source.toString(),
-      to: this.target.toString(),
-    };
-  }
-}
-
-class InputData {
-  nodes: [InputNode];
-  links: [InputLink];
-
-  toD3Network(): D3Network {
-    let nds = this.nodes.map((n) => n.toNode());
-    let egs = this.links.map((e) => e.toEdge());
+  private toD3Network(input: InputData): D3Network {
+    let nds = input.nodes.map(this.toNode);
+    let egs = input.links.map(this.toEdge);
 
     return {
       nodes: nds,
       links: egs,
     };
   }
+
+  private toNode(node: InputNode): Node {
+    return { id: node.id.toString() };
+  }
+
+  private toEdge(link: InputLink): Edge {
+    return {
+      source: link.source,
+      target: link.target,
+      from: link.source.toString(),
+      to: link.target.toString(),
+    };
+  }
+}
+
+interface InputNode {
+  id: string | number;
+}
+
+interface InputLink {
+  source: string | number;
+  target: string | number;
+}
+
+interface InputData {
+  nodes: [InputNode];
+  links: [InputLink];
 }
