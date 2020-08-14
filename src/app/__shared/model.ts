@@ -10,9 +10,9 @@ export interface Edge extends SimulationLinkDatum<Node> {
   readonly to: string;
 }
 
-export interface NetworkInput {
-  nodes: [Node];
-  links: [Edge];
+export interface D3Network {
+  nodes: Node[];
+  links: Edge[];
 }
 
 class GraphError extends Error {
@@ -21,14 +21,29 @@ class GraphError extends Error {
   }
 }
 
+export class Foo<N extends Node> {
+  private readonly nodes: [N];
+  constructor(nodes: [N]) {
+    this.nodes = nodes;
+    this.foo();
+  }
+
+  public foo() {
+    this.nodes.forEach(console.log);
+  }
+}
+
 export class Graph<N extends Node, E extends Edge> {
   private readonly adjMap: Map<string, [E]>;
   private readonly nodesMap: Map<string, N>;
 
   //   For some reason I cannot access `this`?!?!
-  constructor() {
+  constructor(nodes: [N], edges: [E]) {
     this.adjMap = new Map<string, [E]>();
     this.nodesMap = new Map<string, N>();
+
+    nodes.forEach((n) => this.addNode(n));
+    edges.forEach((e) => this.addEdge(e));
   }
 
   public addNode(node: N): void {
@@ -47,7 +62,7 @@ export class Graph<N extends Node, E extends Edge> {
 
     // Sanity check
     if (!this.adjMap.has(u) || !this.adjMap.has(v)) {
-      throw new GraphError(`Graph does not have given `);
+      throw new GraphError(`Graph does not have given nodes: ${u} or ${v}`);
     }
 
     let adjList = this.adjMap.get(u);

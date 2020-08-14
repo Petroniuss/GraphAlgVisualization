@@ -1,7 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import * as d3 from 'd3';
 
-import { Edge, Node, NetworkInput, Graph } from '../__shared/model';
+import { Edge, Node, D3Network, Graph } from '../__shared/model';
+import { NetworkInputParserService } from '../__shared/network-input-parser.service';
 import { SimulationLinkDatum, SimulationNodeDatum, linkHorizontal } from 'd3';
 
 @Component({
@@ -22,7 +23,7 @@ export class PlaneComponent implements OnInit {
   private svg: d3.Selection<SVGElement, any, HTMLElement, any>;
   private graph: Graph<Node, Edge>;
 
-  constructor() {}
+  constructor(inputParser: NetworkInputParserService) {}
 
   ngOnInit(): void {
     this.svg = d3
@@ -30,22 +31,24 @@ export class PlaneComponent implements OnInit {
       .attr('preserveAspectRatio', 'xMinYMin meet')
       .attr('viewBox', `0 0 ${PlaneComponent.width} ${PlaneComponent.height}`);
 
-    d3.json<NetworkInput>('assets/test_network_data.json').then((data) => {
-      this.graph = new Graph<Node, Edge>();
+    d3.json<D3Network>('assets/test_network_data.json').then((data) => {
+      // data.links.forEach(link => {
+      //   link.from = link.target;
+      // })
       // Idk why this doesn't work..
-      // data.nodes.forEach(this.graph.addNode);
-      // data.links.forEach(this.graph.addEdge);
+      // this.graph = new Graph<Node, Edge>(data.nodes, data.links);
+      // let foo = new Foo(data.nodes);
 
       this.createLayout(data);
     });
   }
 
-  private createLayout(data: NetworkInput) {
+  private createLayout(data: D3Network) {
     let color = d3
       .scaleOrdinal<string, string>()
       .range(['#93c464', '#c3073f', '#5e88a2', '#ffb142']);
 
-    let graph = this.graph;
+    // let graph = this.graph;
 
     let nodes = this.svg
       .append('g')
@@ -101,63 +104,4 @@ export class PlaneComponent implements OnInit {
 
     simulation.alpha(1).restart();
   }
-
-  // Okay ... This seems inefficient!
-  // private createArcDiagram(nodes: any, edges: any): void {
-  //   var nodeHash = {};
-
-  //   nodes.forEach((node, i) => {
-  //     nodeHash[node.id] = node;
-  //     node.x = parseInt(i) * 30;
-  //   });
-
-  //   edges.forEach((edge) => {
-  //     edge.weight = parseInt(edge.weight);
-  //     edge.source = nodeHash[edge.source];
-  //     edge.target = nodeHash[edge.target];
-  //   });
-
-  //   let arcG = this.svg.append('g').attr('id', 'arcG');
-
-  //   console.log(edges);
-
-  //   arcG
-  //     .selectAll('path')
-  //     .data(edges)
-  //     .join('path')
-  //     .attr('class', 'arc')
-  //     .style('stroke-width', (d) => d.weight / 2)
-  //     .attr('d', (d, _i) => {
-  //       var draw = d3.line().curve(d3.curveBasis);
-  //       var midX = (d.source.x + d.target.x + 40) / 2;
-  //       var midY = d.source.x - d.target.x;
-
-  //       return draw([
-  //         [d.source.x + 20, d.source.x + 20],
-  //         [midX, midY],
-  //         [d.target.x + 20, d.target.x + d.target.x + 20],
-  //       ]);
-  //     });
-
-  //   arcG
-  //     .selectAll('circle')
-  //     .data(nodes)
-  //     .join('circle')
-  //     .attr('class', 'node')
-  //     .attr('r', 5)
-  //     .attr('cx', (d) => d.x + 20)
-  //     .attr('cy', (d) => d.x + 20)
-  //     .each(function (d) {
-  //       console.log(d, this);
-  //     });
-
-  //   d3.selectAll('circle')
-  //     .on('mouseover', (d, i, g) => {
-  //       console.log(d, i, g);
-  //       d3.select(g[i]).classed('active', true);
-  //     })
-  //     .on('mouseout', (d, i, g) => {
-  //       d3.select(g[i]).classed('active', false);
-  //     });
-  // }
 }
