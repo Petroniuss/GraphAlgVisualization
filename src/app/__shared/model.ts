@@ -21,18 +21,6 @@ class GraphError extends Error {
   }
 }
 
-export class Foo<N extends Node> {
-  private readonly nodes: [N];
-  constructor(nodes: [N]) {
-    this.nodes = nodes;
-    this.foo();
-  }
-
-  public foo() {
-    this.nodes.forEach(console.log);
-  }
-}
-
 export class Graph<N extends Node, E extends Edge> {
   private readonly adjMap: Map<string, [E]>;
   private readonly nodesMap: Map<string, N>;
