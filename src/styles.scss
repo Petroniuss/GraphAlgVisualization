@@ -17,10 +17,13 @@ $primary: $sblue;
 $background-color: $sgray;
 $background-darker: $sdark;
 
+html,
 body {
-  margin: 0;
-  background-color: $sgray;
+  background-color: $background-color;
   color: white;
+
+  margin: 0;
+  box-sizing: border-box;
 }
 
 h1 {

@@ -1,16 +1,2 @@
-1. Figure out a way for storing the graph
 
-d3js needs them as list of nodes followed by list of edges.
-
-List of nodes:
- [ {
-    id: string
-   }
- ]
-List of edges:
- [
-     {
-         source: string, # id
-         target: string # id
-     }
- ]
+Basically follow the book and extract important bits :)
