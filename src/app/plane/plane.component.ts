@@ -3,7 +3,6 @@ import * as d3 from 'd3';
 
 import { Edge, Node, D3Network, Graph } from '../__shared/model';
 import { NetworkInputParserService } from '../__shared/network-input-parser.service';
-import { SimulationLinkDatum, SimulationNodeDatum, linkHorizontal } from 'd3';
 
 @Component({
   selector: 'plane',
