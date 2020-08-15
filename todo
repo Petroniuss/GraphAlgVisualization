@@ -1,8 +1,14 @@
 
-1. Add suitable navbar - view
+1. Add suitable navbar - view:
+    - create play/pause button
+    - add nested dropdowns
 2. Implement communication serivce that would allow sending commands from navbar to plane.
 3. Create some sort of model for managing simulation and graph on top of which algorithms could
     be implmeneted.
+
+4. Each algorithm might have some sort of context menu associated with it
+   For example if sb selects breadth-first-search he might wanna select multiple nodes 
+   to start simulation
 
 Extra bits:
     The communication between menu-navbar-whatever should be done via service

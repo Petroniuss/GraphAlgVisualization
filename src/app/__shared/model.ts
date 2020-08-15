@@ -1,6 +1,6 @@
 import { SimulationNodeDatum, SimulationLinkDatum } from 'd3';
 
-// we might have classes that define more properties.
+// we might want to define more properties.
 export interface Node extends SimulationNodeDatum {
   readonly id: string;
 }
@@ -46,11 +46,15 @@ class IdGenerator implements IdGen {
 export class Graph<N extends Node, E extends Edge> {
   private readonly adjMap: Map<string, E[]>;
   private readonly nodesMap: Map<string, N>;
+  private readonly nodes: N[];
+  private readonly edges: E[];
   private readonly idGenerator: IdGen;
 
   constructor(nodes: N[], edges: E[], idGenerator: IdGen = new IdGenerator()) {
     this.adjMap = new Map<string, E[]>();
     this.nodesMap = new Map<string, N>();
+    this.nodes = new Array<N>();
+    this.edges = new Array<E>();
     this.idGenerator = idGenerator;
 
     nodes.forEach((n) => this.addNode(n));
@@ -64,6 +68,7 @@ export class Graph<N extends Node, E extends Edge> {
       throw new GraphError(`Graph already has node associated id: ${key}`);
     }
 
+    this.nodes.push(node);
     this.nodesMap.set(key, node);
     this.adjMap.set(key, new Array<E>());
   }
@@ -85,14 +90,27 @@ export class Graph<N extends Node, E extends Edge> {
     }
 
     adjList.push(edge);
+    this.edges.push(edge);
+  }
+
+  public hasNode(id: string): boolean {
+    return this.nodesMap.has(id);
   }
 
   public getNode(id: string): N {
-    if (!this.nodesMap.has(id)) {
+    if (!this.hasNode(id)) {
       throw new GraphError(`Accessing nonexistent node with id: ${id}!`);
     }
 
     return this.nodesMap.get(id);
+  }
+
+  public getNodes(): N[] {
+    return this.nodes;
+  }
+
+  public getEdges(): E[] {
+    return this.edges;
   }
 
   public getEdgeNodes(edge: E): [N, N] {

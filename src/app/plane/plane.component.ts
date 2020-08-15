@@ -141,18 +141,11 @@ export class PlaneComponent implements OnInit {
       .force('charge', d3.forceManyBody().strength(-100.0).distanceMax(100.0))
       .on('tick', function () {
         circles.attr('transform', (d) => `translate(${d.x}, ${d.y})`);
-
         lines
           .attr('x1', (edge) => graph.getNode(edge.from).x)
           .attr('x2', (edge) => graph.getNode(edge.to).x)
           .attr('y1', (edge) => graph.getNode(edge.from).y)
           .attr('y2', (edge) => graph.getNode(edge.to).y);
       });
-
-    // setTimeout(() => {
-    //   simulation.stop();
-    //   simulation.nodes().push({ id: '12', x: width / 2, y: height / 2 });
-    //   simulation.restart();
-    // }, 2500);
   }
 }

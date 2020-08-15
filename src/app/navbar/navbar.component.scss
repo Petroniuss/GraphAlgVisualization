@@ -77,6 +77,13 @@ nav {
       }
     }
 
+    .nested {
+      margin-top: -1;
+      top: 0;
+      left: 80%;
+      display: none;
+    }
+
     .dropdown {
       position: relative;
       display: inline-block;
@@ -85,7 +92,7 @@ nav {
         display: block;
       }
 
-      .dropdown-content {
+      & > .dropdown-content {
         position: absolute;
         display: none;
         margin-top: 2px;
