@@ -1,47 +1,30 @@
 @use '~src/styles' as vars;
 
 $red: #e01e37;
+$yellow: #fe9922;
+$green: #41a368;
 
-.svg-container {
-  svg {
-  }
-}
+$node-color: $green;
+$edge-color: $red;
 
-//
-.info {
-  color: white;
-  font-size: 10px;
+#arrow {
+  fill: $edge-color;
+  stroke: none;
 }
 
 .node {
   circle {
     stroke: vars.$background-color;
     stroke-width: 0.6;
+
+    fill: #93c464;
   }
 }
 
 .edge {
   line {
     fill: none;
-    stroke: #fe9922;
+    stroke: $edge-color;
     stroke-width: 0.72;
   }
-}
-
-.arc {
-  stroke: $red;
-  fill: none;
-}
-
-circle.active {
-  fill: $red;
-}
-path.active {
-  stroke: #41a368;
-}
-circle.source {
-  fill: #93c464;
-}
-circle.target {
-  fill: #41a368;
 }

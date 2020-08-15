@@ -1,4 +1,4 @@
-import { SimulationNodeDatum, SimulationLinkDatum, map } from 'd3';
+import { SimulationNodeDatum, SimulationLinkDatum } from 'd3';
 
 // we might have classes that define more properties.
 export interface Node extends SimulationNodeDatum {
@@ -21,14 +21,36 @@ class GraphError extends Error {
   }
 }
 
+interface IdGen {
+  next(validate: (string) => boolean): string;
+}
+
+class IdGenerator implements IdGen {
+  private seed: number;
+  constructor(seed: number = 0) {
+    this.seed = seed;
+  }
+
+  next(validate: (string) => boolean): string {
+    let nextId = this.seed.toString();
+    while (!validate(nextId)) {
+      this.seed += 1;
+      nextId = this.seed.toString();
+    }
+
+    return nextId;
+  }
+}
+
 export class Graph<N extends Node, E extends Edge> {
   private readonly adjMap: Map<string, E[]>;
   private readonly nodesMap: Map<string, N>;
+  private readonly idGenerator: IdGen;
 
-  //   For some reason I cannot access `this`?!?!
-  constructor(nodes: N[], edges: E[]) {
+  constructor(nodes: N[], edges: E[], idGenerator: IdGen = new IdGenerator()) {
     this.adjMap = new Map<string, E[]>();
     this.nodesMap = new Map<string, N>();
+    this.idGenerator = idGenerator;
 
     nodes.forEach((n) => this.addNode(n));
     edges.forEach((e) => this.addEdge(e));
