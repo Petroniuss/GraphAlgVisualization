@@ -4,8 +4,18 @@ $red: #e01e37;
 $yellow: #fe9922;
 $green: #41a368;
 
-$node-color: $green;
-$edge-color: $red;
+$node-color: $red;
+$edge-color: white;
+
+.svg-container {
+  margin: 0;
+  padding: 0;
+}
+
+svg {
+  width: 100%;
+  height: 100%;
+}
 
 #arrow {
   fill: $edge-color;
@@ -17,7 +27,7 @@ $edge-color: $red;
     stroke: vars.$background-color;
     stroke-width: 0.6;
 
-    fill: #93c464;
+    fill: $node-color;
   }
 }
 

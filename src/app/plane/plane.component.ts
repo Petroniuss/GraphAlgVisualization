@@ -32,7 +32,7 @@ export class PlaneComponent implements OnInit {
   ngOnInit(): void {
     this.svg = d3
       .select<SVGElement, any>('svg')
-      .attr('preserveAspectRatio', 'xMinYMin meet')
+      .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('viewBox', `0 0 ${width} ${height}`);
 
     this.inputParser.fetchData().then((network) => {
@@ -83,21 +83,17 @@ export class PlaneComponent implements OnInit {
         d3
           .drag<SVGCircleElement, Node>()
           .on('start', (node) => {
-            if (!d3.event.active) {
-              simulation.alphaTarget(0.6).restart();
-            }
+            simulation.alphaTarget(0.6).restart();
 
-            node.fx = node.x;
-            node.fy = node.y;
+            node.x = node.x;
+            node.y = node.y;
           })
           .on('drag', (node) => {
             node.fx = adjustX(d3.event.x);
             node.fy = adjustY(d3.event.y);
           })
           .on('end', (node) => {
-            if (!d3.event.active) {
-              simulation.alphaTarget(0.0);
-            }
+            simulation.alphaTarget(0.0);
 
             node.fx = null;
             node.fy = null;
@@ -119,6 +115,19 @@ export class PlaneComponent implements OnInit {
       .attr('r', nodeRadius)
       .attr('fill', (datum) => color(datum.id));
 
+    this.svg.on('mousedown', function () {
+      simulation.stop();
+      // let p = d3.mouse(this);
+      // data.nodes.push({
+      //   id: '199',
+      //   x: p[0],
+      //   y: p[1],
+      // });
+      // here we basically need to feed all of the nodes into simulation once again!
+
+      simulation.restart();
+    });
+
     // let's see how long it takes my to configure the simulation..
     let graph = this.graph;
     let simulation = d3
@@ -129,7 +138,7 @@ export class PlaneComponent implements OnInit {
         d3.forceLink<Node, Edge>(data.links).id((node) => node.id)
       )
       .force('collision', d3.forceCollide<Node>(collisionRadius))
-      .force('charge', d3.forceManyBody().strength(-100.0))
+      .force('charge', d3.forceManyBody().strength(-100.0).distanceMax(100.0))
       .on('tick', function () {
         circles.attr('transform', (d) => `translate(${d.x}, ${d.y})`);
 
@@ -140,6 +149,10 @@ export class PlaneComponent implements OnInit {
           .attr('y2', (edge) => graph.getNode(edge.to).y);
       });
 
-    simulation.alpha(1).restart();
+    // setTimeout(() => {
+    //   simulation.stop();
+    //   simulation.nodes().push({ id: '12', x: width / 2, y: height / 2 });
+    //   simulation.restart();
+    // }, 2500);
   }
 }

@@ -42,6 +42,7 @@ class IdGenerator implements IdGen {
   }
 }
 
+// we need another class that would manage simulation
 export class Graph<N extends Node, E extends Edge> {
   private readonly adjMap: Map<string, E[]>;
   private readonly nodesMap: Map<string, N>;

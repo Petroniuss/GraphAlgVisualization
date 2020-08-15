@@ -17,13 +17,18 @@ $primary: $sblue;
 $background-color: $sgray;
 $background-darker: $sdark;
 
-html,
 body {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+  font-family: "Staatliches", cursive;
+  font-size: 2.2em;
   background-color: $background-color;
-  color: white;
-
-  margin: 0;
   box-sizing: border-box;
+  color: white;
 }
 
 h1 {

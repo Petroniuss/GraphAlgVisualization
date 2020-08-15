@@ -1,5 +1,4 @@
 // Module reponsible for scaling elements.
-
 export const width = 700;
 export const height = 324;
 

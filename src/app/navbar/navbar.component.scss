@@ -1,14 +1,91 @@
 @use '~src/styles' as vars;
 
-.navbar {
-  color: vars.$accent;
-  background-color: vars.$background-color;
-  display: flex;
-  justify-content: space-around;
+.rainbow {
+  background: linear-gradient(-45deg, #c3073f, #f9ca24, #23d5ab, #1f2833);
+  background-size: 400% 400%;
+  animation: gradient 10s ease infinite;
+  height: 3px;
+
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
 }
 
-.navbar.nav-item {
-}
+nav {
+  a {
+    color: white;
+    text-decoration: none;
+    padding: 5px;
+  }
+  padding: 0;
+  margin: 0;
+  width: 100%;
 
-.title {
+  ol {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 0;
+
+    li {
+      padding-left: 32px;
+      padding-right: 32px;
+      margin-left: 2px;
+      margin-right: 2px;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+
+      &:hover,
+      &:hover > a {
+        color: vars.$background-color;
+        background-color: white;
+      }
+
+      &.status {
+        align-self: flex-end;
+        width: 40vw;
+        margin-left: auto;
+        margin-right: 0;
+        padding-left: 10px;
+      }
+
+      &.title {
+        margin-left: 100px;
+        color: vars.$background-color;
+        @extend .rainbow;
+        height: 100%;
+      }
+    }
+
+    .dropdown {
+      position: relative;
+      display: inline-block;
+
+      &:hover .dropdown-content {
+        display: block;
+      }
+
+      .dropdown-content {
+        position: absolute;
+        display: none;
+        margin-top: 2px;
+
+        li {
+          font-size: 0.6em;
+          padding: 10px;
+          border-bottom-left-radius: 0px;
+          border-bottom-right-radius: 0px;
+        }
+      }
+    }
+  }
 }

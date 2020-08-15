@@ -1,2 +1,16 @@
 
-Basically follow the book and extract important bits :)
+1. Add suitable navbar - view
+2. Implement communication serivce that would allow sending commands from navbar to plane.
+3. Create some sort of model for managing simulation and graph on top of which algorithms could
+    be implmeneted.
+
+Extra bits:
+    The communication between menu-navbar-whatever should be done via service
+        and rxjs library :).
+
+    We should support few type of events:
+        - addNodes/addEdges 
+        - set particular algorithm
+        - run/pause
+        - set some sort of view configuration (this one is optional)
+            for example: speed of animation
