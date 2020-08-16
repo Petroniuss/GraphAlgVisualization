@@ -48,6 +48,7 @@ export class Graph<N extends Node, E extends Edge<N>> {
   private readonly nodesMap: Map<string, N>;
   private readonly nodes: N[];
   private readonly edges: E[];
+  // maybe it'd be better to inject it higher in the hierarchy..
   private readonly idGenerator: IdGen;
 
   constructor(nodes: N[], edges: E[], idGenerator: IdGen = new IdGenerator()) {

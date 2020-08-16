@@ -2,7 +2,8 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 import { Edge, Node, Graph } from '../__shared/model/graph';
 import { NetworkInputParserService } from '../__shared/network-input-parser.service';
-import { GraphSimulation } from '../__shared/model/graph-simulation';
+import { GraphLayout, GraphMode } from '../__shared/model/graph-layout';
+import { DragMode } from '../__shared/mode/drag-mode';
 
 @Component({
   selector: 'plane',
@@ -11,7 +12,8 @@ import { GraphSimulation } from '../__shared/model/graph-simulation';
   encapsulation: ViewEncapsulation.None,
 })
 export class PlaneComponent implements OnInit {
-  private simulation: GraphSimulation<Node, Edge<Node>>;
+  private layout: GraphLayout<Node, Edge<Node>>;
+  private mode: GraphMode<Node, Edge<Node>>;
   private readonly inputParser: NetworkInputParserService;
 
   constructor(inputParser: NetworkInputParserService) {
@@ -21,7 +23,10 @@ export class PlaneComponent implements OnInit {
   ngOnInit(): void {
     this.inputParser.fetchData().then((network) => {
       const graph = new Graph(network.nodes, network.links);
-      this.simulation = new GraphSimulation(graph);
+      this.layout = new GraphLayout(graph);
+      this.mode = new DragMode();
+
+      this.mode.apply(this.layout);
     });
   }
 }

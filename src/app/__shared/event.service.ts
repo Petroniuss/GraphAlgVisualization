@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
-import { Mode } from './model/graph-simulation';
+import { ModeEvent } from './model/graph-layout';
 
 // We might think about creating interfaces that this service would
 // implement so that it would be impossible for receiver to emit events.
@@ -8,14 +8,14 @@ import { Mode } from './model/graph-simulation';
   providedIn: 'root',
 })
 export class EventService {
-  private modeSource = new Subject<Mode>();
+  private modeSource = new Subject<ModeEvent>();
   private logSource = new Subject<string>();
 
-  public changeMode(mode: Mode): void {
+  public changeMode(mode: ModeEvent): void {
     this.modeSource.next(mode);
   }
 
-  public modeObservable(): Observable<Mode> {
+  public modeObservable(): Observable<ModeEvent> {
     return this.modeSource.asObservable();
   }
 
