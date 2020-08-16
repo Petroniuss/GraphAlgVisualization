@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { EventService } from '../__shared/event.service';
 
 @Component({
   selector: 'navbar',
@@ -6,7 +7,20 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
-  constructor() {}
+  private eventService;
+  constructor(eventSerice: EventService) {
+    this.eventService = this.eventService;
+  }
 
   ngOnInit(): void {}
+
+  selectDragMode(): void {}
+
+  addNode(): void {
+    console.log('Add node');
+  }
+
+  addEdge(weight: string): void {
+    console.log(weight);
+  }
 }

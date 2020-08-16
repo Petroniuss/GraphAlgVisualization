@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { D3Network, Node, Edge } from './model';
+import { D3Network, Node, Edge } from './model/graph';
 import * as d3 from 'd3';
 
 @Injectable({
@@ -30,7 +30,7 @@ export class NetworkInputParserService {
     return { id: node.id.toString() };
   }
 
-  private toEdge(link: InputLink): Edge {
+  private toEdge(link: InputLink): Edge<Node> {
     return {
       source: link.source,
       target: link.target,

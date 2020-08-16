@@ -5,8 +5,21 @@
     <li class="dropdown">
       Select mode
       <ol class="dropdown-content">
-        <li><a>add node</a></li>
-        <li><a>add edge</a></li>
+        <li>
+          <a (click)="selectDragMode()">drag stuff around</a>
+        </li>
+        <li>
+          <a (click)="addNode()">add node</a>
+        </li>
+        <li class="dropdown">
+          <a (click)="addEdge(addEdgeWeight.value)">Add edge</a>
+          <ol class="nested dropdown-content">
+            <li>
+              <a>weight</a>
+              <input #addEdgeWeight type="text" />
+            </li>
+          </ol>
+        </li>
       </ol>
     </li>
     <li class="dropdown">
@@ -15,8 +28,9 @@
         <li class="dropdown">
           <a>Breadth First Search</a>
           <ol class="nested dropdown-content">
-            <li><a>add node</a></li>
-            <li><a>add edge</a></li>
+            <li>
+              <a>select starting nodes</a>
+            </li>
           </ol>
         </li>
         <li><a>Depth First Search </a></li>

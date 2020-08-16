@@ -5,14 +5,14 @@ export interface Node extends SimulationNodeDatum {
   readonly id: string;
 }
 
-export interface Edge extends SimulationLinkDatum<Node> {
+export interface Edge<N extends Node> extends SimulationLinkDatum<N> {
   readonly from: string;
   readonly to: string;
 }
 
 export interface D3Network {
   nodes: Node[];
-  links: Edge[];
+  links: Edge<Node>[];
 }
 
 class GraphError extends Error {
@@ -43,7 +43,7 @@ class IdGenerator implements IdGen {
 }
 
 // we need another class that would manage simulation
-export class Graph<N extends Node, E extends Edge> {
+export class Graph<N extends Node, E extends Edge<N>> {
   private readonly adjMap: Map<string, E[]>;
   private readonly nodesMap: Map<string, N>;
   private readonly nodes: N[];

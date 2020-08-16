@@ -29,12 +29,24 @@
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
+input {
+  font-family: "Staatliches", cursive;
+  width: 80px;
+  // &:hover { color: white;
+  //   background-color: vars.$background-color;
+  // }
+  &:focus {
+    outline-color: vars.$accent;
+  }
+}
+
 nav {
   @extend .noselect;
   a {
     color: white;
     text-decoration: none;
     padding: 5px;
+    cursor: pointer;
   }
   padding: 0;
   margin: 0;
@@ -60,6 +72,10 @@ nav {
         color: vars.$background-color;
         background-color: white;
       }
+
+      // & > input { color: white;
+      //   background-color: vars.$background-color;
+      // }
 
       &.status {
         align-self: flex-end;
@@ -88,14 +104,14 @@ nav {
       position: relative;
       display: inline-block;
 
-      &:hover .dropdown-content {
+      &:hover > .dropdown-content {
         display: block;
       }
 
       & > .dropdown-content {
         position: absolute;
         display: none;
-        margin-top: 2px;
+        margin-top: 1px;
 
         li {
           font-size: 0.6em;
