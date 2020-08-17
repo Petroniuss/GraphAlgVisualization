@@ -22,6 +22,7 @@ export interface GraphMode<N extends Node, E extends Edge<N>> {
   // should be called upon hitting play button - should start algorithm
   play(): void;
 
+  // stops execution of given algorithm
   pause(): void;
 
   // should remove all event listeners
@@ -31,40 +32,19 @@ export interface GraphMode<N extends Node, E extends Edge<N>> {
 export class GraphLayout<N extends Node, E extends Edge<N>> {
   readonly graph: Graph<N, E>;
   readonly svg: d3.Selection<SVGElement, any, HTMLElement, any>;
+  nodesContainer: d3.Selection<SVGGElement, any, HTMLElement, any>;
+  edgeContainer: d3.Selection<SVGGElement, any, HTMLElement, any>;
 
-  defaultEdgesSelection() {
-    return this.svg
-      .append('g')
-      .attr('id', 'gEdges')
-      .selectAll('g')
-      .data(this.graph.getEdges())
-      .join('g')
-      .attr('class', 'edge');
-  }
+  constructor(graph: Graph<N, E>) {
+    this.graph = graph;
+    this.svg = d3
+      .select<SVGElement, any>('svg')
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .attr('viewBox', `0 0 ${width} ${height}`);
 
-  defaultLinesSelection(edgesSelection) {
-    return edgesSelection
-      .append('line')
-      .join('line')
-      .attr('marker-end', 'url(#arrow)');
-  }
-
-  defaultNodesSelection() {
-    return this.svg
-      .append('g')
-      .attr('id', 'gNodes')
-      .selectAll('g')
-      .data(this.graph.getNodes())
-      .join('g')
-      .attr('class', 'node');
-  }
-
-  defaultCirclesSelection(nodesSelection) {
-    return nodesSelection.append('circle').join('circle').attr('r', nodeRadius);
-  }
-
-  defaultMarkersSelection() {
-    return this.svg
+    this.edgeContainer = this.svg.append('g').attr('id', 'gEdges');
+    this.nodesContainer = this.svg.append('g').attr('id', 'gNodes');
+    this.svg
       .append('defs')
       .append('marker')
       .attr('id', 'arrow')
@@ -78,9 +58,53 @@ export class GraphLayout<N extends Node, E extends Edge<N>> {
       .attr('d', 'M 0 0 L 6 3 L 0 6 z');
   }
 
-  // let's see how long it takes my to configure the simulation..
-  // This is the easiest way to reuse implementation => pass context which contains selectoin of circles and lines.
-  // Context needs to be updateed whenever we add nodes
+  defaultBindEdges() {
+    let edgeS = this.edgeContainer.selectAll('g').data(this.graph.getEdges());
+
+    edgeS
+      .enter()
+      .append('g')
+      .attr('class', 'edge')
+      .append('line')
+      .attr('marker-end', 'url(#arrow)');
+
+    edgeS.exit().remove();
+  }
+
+  defaultBindNodes() {
+    let nodeS = this.nodesContainer.selectAll('g').data(this.graph.getNodes());
+
+    nodeS
+      .enter()
+      .append('g')
+      .attr('class', 'node')
+      .append('circle')
+      .join('circle')
+      .attr('r', nodeRadius);
+
+    nodeS.exit().remove();
+  }
+
+  defaultEdgesSelection() {
+    return this.edgeContainer.selectAll('g');
+  }
+
+  defaultLinesSelection() {
+    return this.defaultEdgesSelection().select('line');
+  }
+
+  defaultNodesSelection() {
+    return this.nodesContainer.selectAll('g');
+  }
+
+  defaultCirclesSelection() {
+    return this.defaultNodesSelection().select('circle');
+  }
+
+  defaultMarkersSelection() {
+    return this.svg.select('defs').select('marker');
+  }
+
   defaultForceSimulation(ctx: { circles; lines }) {
     let graph = this.graph;
     return d3
@@ -100,13 +124,5 @@ export class GraphLayout<N extends Node, E extends Edge<N>> {
           .attr('y1', (edge) => graph.getNode(edge.from).y)
           .attr('y2', (edge) => graph.getNode(edge.to).y);
       });
-  }
-
-  constructor(graph: Graph<N, E>) {
-    this.graph = graph;
-    this.svg = d3
-      .select<SVGElement, any>('svg')
-      .attr('preserveAspectRatio', 'xMidYMid meet')
-      .attr('viewBox', `0 0 ${width} ${height}`);
   }
 }

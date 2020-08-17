@@ -7,8 +7,13 @@ import {
   nodeRadius,
 } from '../model/simulation-configuration';
 import * as d3 from 'd3';
+import { Option, some, none } from 'fp-ts/Option';
 
-export class DragMode<N extends Node, E extends Edge<N>>
+// upon selecting two nodes edge shoudld be created between them and selection fill should
+// should be animated back to default.
+
+// upon pressing a mouse on the canvas new node should be created with newly generated id.
+export class CreateMode<N extends Node, E extends Edge<N>>
   implements GraphMode<N, E> {
   nodes: any;
   force: d3.Simulation<N, E>;
@@ -72,5 +77,16 @@ export class DragMode<N extends Node, E extends Edge<N>>
       .on('mousedown.end', null)
       .on('mouseover', null)
       .on('mouseout', null);
+  }
+
+  mouseDownCanvas(): void {}
+
+  mouseOverNode(): void {}
+
+  mouseDownNode(): void {}
+
+  restart(): void {
+    let lines = this.layout.defaultLinesSelection();
+    let;
   }
 }
