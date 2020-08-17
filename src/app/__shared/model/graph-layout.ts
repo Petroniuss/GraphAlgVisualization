@@ -22,6 +22,8 @@ export interface GraphMode<N extends Node, E extends Edge<N>> {
   // should be called upon hitting play button - should start algorithm
   play(): void;
 
+  pause(): void;
+
   // should remove all event listeners
   exit(): void;
 }
