@@ -13,46 +13,103 @@ import { Option, some, none } from 'fp-ts/Option';
 // should be animated back to default.
 
 // upon pressing a mouse on the canvas new node should be created with newly generated id.
-export class CreateMode<N extends Node, E extends Edge<N>>
-  implements GraphMode<N, E> {
+export class CreateMode implements GraphMode<Node, Edge<Node>> {
   nodes: any;
-  force: d3.Simulation<N, E>;
+  force: d3.Simulation<Node, Edge<Node>>;
+  layout: GraphLayout<Node, Edge<Node>>;
+  idGenerator: IdGen;
+  selectedNode: Option<Node> = none;
 
-  apply(layout: GraphLayout<N, E>): void {
-    layout.defaultBindEdges();
-    layout.defaultBindNodes();
+  apply(layout: GraphLayout<Node, Edge<Node>>): void {
+    this.idGenerator = new IdGenerator(
+      0,
+      (id) => !this.layout.graph.hasNode(id)
+    );
+    this.layout = layout;
+    this.bindEdges();
+    this.bindNodes();
 
     this.nodes = layout.defaultNodesSelection();
-    let lines = layout.defaultLinesSelection();
-    let circles = layout.defaultCirclesSelection();
+    this.force = layout.defaultForceSimulation();
 
-    let ctx = {
-      circles: circles,
-      lines: lines,
-    };
-
-    this.force = layout.defaultForceSimulation(ctx);
-
+    let idGen = this.idGenerator;
+    let graph = this.layout.graph;
     let force = this.force;
-    this.nodes
-      .call(
-        d3
-          .drag<SVGCircleElement, N>()
-          .on('start', (node) => {
-            force.alphaTarget(0.6).restart();
-            node.x = node.x;
-            node.y = node.y;
-          })
-          .on('drag', (node) => {
-            node.fx = adjustX(d3.event.x);
-            node.fy = adjustY(d3.event.y);
-          })
-          .on('end', (node) => {
-            force.alphaTarget(0.0);
-            node.fx = null;
-            node.fy = null;
-          })
-      )
+    let ctx = this;
+    let mouseDownCanvas = function () {
+      force.stop();
+      let point = d3.mouse(this);
+      let id = idGen.next();
+      let node: Node = { x: point[0], y: point[1], id: id };
+
+      graph.addNode(node);
+      ctx.restart();
+    };
+    layout.defaultSvgSelection().on('mousedown', mouseDownCanvas);
+  }
+
+  restart() {
+    this.bindEdges();
+    this.bindNodes();
+    this.force = this.layout.defaultForceSimulation();
+  }
+
+  bindEdges() {
+    let edgeS = this.layout
+      .defaultEdgesSelection()
+      .data(this.layout.graph.getEdges());
+
+    let graph = this.layout.graph;
+
+    edgeS
+      .enter()
+      .append('g')
+      .attr('id', (edge) => `e${edge.from}-${edge.to}`)
+      .attr('class', 'edge')
+      .append('line')
+      .attr('marker-end', 'url(#arrow)')
+      .attr('x1', (edge) => graph.getNode(edge.from).x)
+      .attr('x2', (edge) => graph.getNode(edge.to).x)
+      .attr('y1', (edge) => graph.getNode(edge.from).y)
+      .attr('y2', (edge) => graph.getNode(edge.to).y);
+    edgeS.exit().remove();
+
+    this.layout.updateLines();
+  }
+
+  bindNodes() {
+    let ctx = this;
+    let graph = this.layout.graph;
+
+    let nodeS = this.layout
+      .defaultNodesSelection()
+      .data(this.layout.graph.getNodes())
+      .on('mousedown', (n) => {
+        ctx.layout
+          .getNodeSelectionById(n.id)
+          .select('circle')
+          .attr('fill', '#ffffff');
+
+        switch (ctx.selectedNode._tag) {
+          case 'Some':
+            let n1 = ctx.selectedNode.value;
+            if (n.id !== n1.id) {
+              graph.addEdge({
+                from: n1.id,
+                to: n.id,
+                source: n1,
+                target: n,
+              });
+              ctx.restart();
+            }
+            ctx.selectedNode = none;
+            break;
+          case 'None':
+            ctx.selectedNode = some(n);
+            break;
+        }
+        d3.event.stopPropagation();
+      })
       .on('mouseover', function () {
         d3.select(this)
           .select('circle')
@@ -62,6 +119,55 @@ export class CreateMode<N extends Node, E extends Edge<N>>
       .on('mouseout', function () {
         d3.select(this).select('circle').transition('r').attr('r', nodeRadius);
       });
+
+    nodeS
+      .enter()
+      .append('g')
+      .attr('id', (n) => n.id)
+      .attr('class', 'node')
+      .append('circle')
+      .join('circle')
+      .attr('r', nodeRadius)
+      .on('mousedown', (n) => {
+        ctx.layout
+          .getNodeSelectionById(n.id)
+          .select('circle')
+          .attr('r', 15)
+          .attr('fill', '#ffffff');
+
+        switch (ctx.selectedNode._tag) {
+          case 'Some':
+            let n1 = ctx.selectedNode.value;
+            if (n.id !== n1.id) {
+              graph.addEdge({
+                from: n1.id,
+                to: n.id,
+                source: n1,
+                target: n,
+              });
+            }
+            ctx.selectedNode = none;
+            ctx.restart();
+            break;
+          case 'None':
+            ctx.selectedNode = some(n);
+            break;
+        }
+        d3.event.stopPropagation();
+      })
+      .on('mouseover', function () {
+        d3.select(this)
+          .select('circle')
+          .transition('r')
+          .attr('r', nodeRadiusOnFocus);
+      })
+      .on('mouseout', function () {
+        d3.select(this).select('circle').transition('r').attr('r', nodeRadius);
+      });
+
+    nodeS.exit().remove();
+
+    this.layout.updateCircles();
   }
 
   play(): void {}
@@ -70,6 +176,7 @@ export class CreateMode<N extends Node, E extends Edge<N>>
 
   exit(): void {
     this.force.stop();
+    this.layout.defaultSvgSelection().on('mousedown', null);
 
     this.nodes
       .on('mousedown.drag', null)
@@ -78,15 +185,28 @@ export class CreateMode<N extends Node, E extends Edge<N>>
       .on('mouseover', null)
       .on('mouseout', null);
   }
+}
 
-  mouseDownCanvas(): void {}
+interface IdGen {
+  next(): string;
+}
 
-  mouseOverNode(): void {}
+class IdGenerator implements IdGen {
+  private seed: number;
+  private validate: (string) => boolean;
 
-  mouseDownNode(): void {}
+  constructor(seed: number, validate: (string) => boolean) {
+    this.seed = seed;
+    this.validate = validate;
+  }
 
-  restart(): void {
-    let lines = this.layout.defaultLinesSelection();
-    let;
+  next(): string {
+    let nextId = this.seed.toString();
+    while (!this.validate(nextId)) {
+      this.seed += 1;
+      nextId = this.seed.toString();
+    }
+
+    return nextId;
   }
 }

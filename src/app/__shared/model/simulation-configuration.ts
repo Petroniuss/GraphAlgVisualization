@@ -2,7 +2,7 @@
 export const width = 700;
 export const height = 324;
 
-export const nodeRadius = 4;
+export const nodeRadius = 3;
 export const nodeRadiusOnFocus = 9;
 export const collisionRadius = nodeRadius;
 

@@ -7,20 +7,23 @@ import { EventService } from '../__shared/event.service';
   styleUrls: ['./navbar.component.scss'],
 })
 export class NavbarComponent implements OnInit {
-  private eventService;
-  constructor(eventSerice: EventService) {
-    this.eventService = this.eventService;
+  private eventService: EventService;
+  constructor(eventService: EventService) {
+    this.eventService = eventService;
   }
 
   ngOnInit(): void {}
 
-  selectDragMode(): void {}
-
-  addNode(): void {
-    console.log('Add node');
+  selectDragMode(): void {
+    this.eventService.changeMode({
+      tag: 'drag',
+    });
   }
 
-  addEdge(weight: string): void {
-    console.log(weight);
+  selectCreateMode(): void {
+    this.eventService.changeMode({
+      tag: 'create',
+      weight: 0,
+    });
   }
 }

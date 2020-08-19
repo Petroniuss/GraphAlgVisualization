@@ -18,15 +18,7 @@ export class DragMode<N extends Node, E extends Edge<N>>
     layout.defaultBindNodes();
 
     this.nodes = layout.defaultNodesSelection();
-    let lines = layout.defaultLinesSelection();
-    let circles = layout.defaultCirclesSelection();
-
-    let ctx = {
-      circles: circles,
-      lines: lines,
-    };
-
-    this.force = layout.defaultForceSimulation(ctx);
+    this.force = layout.defaultForceSimulation();
 
     let force = this.force;
     this.nodes
